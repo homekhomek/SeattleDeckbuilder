@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sim": "node src/game/sim.js"
   },
   "dependencies": {
+    "peerjs": "^1.5.5",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
