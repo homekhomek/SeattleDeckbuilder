@@ -73,6 +73,18 @@ function scripted() {
   assert(result.state.players.p0.inPlay.length === 0, 'scrapped out of play')
   assert(result.state.scrap.length === 1, 'scrap pile')
   assert(result.state.players.p0.combat >= 2, 'scrap combat')
+
+  state = setupGame(6)
+  const dealt = state.players.p0.hand.length
+  result = applyCommand(state, { type: 'PLAY_HAND', playerId: 'p0' })
+  assert(!result.error, result.error)
+  assert(result.state.players.p0.inPlay.length + result.state.players.p0.bases.length === dealt, 'played the hand')
+  assert(result.state.players.p0.hand.length === 0, 'hand empty')
+
+  const custom = setupGame(9, { p0: 'A', p1: 'B' }, { 'ferry-runner': 4 })
+  const ferry = [...custom.tradeDeck, ...custom.tradeRow.filter(Boolean)]
+    .filter((card) => card.defId === 'ferry-runner')
+  assert(ferry.length === 4, 'trade deck copy override')
 }
 
 function costOf(command, state) {

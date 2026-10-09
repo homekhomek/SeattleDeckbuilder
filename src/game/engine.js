@@ -127,7 +127,7 @@ function applyInstant(state, events, playerId, effect) {
 function openChoice(state, events, playerId, effect) {
   if (effect.kind === 'opponentDiscard') {
     const ownerId = other(playerId)
-    const options = state.players[ownerId].hand.map((card) => card.instanceId)
+    const options = state.players[ownerId].hand.map((card) => ({ id: card.instanceId, zone: 'hand' }))
     if (options.length === 0) return false
     state.pendingChoice = {
       playerId: ownerId,
@@ -143,8 +143,8 @@ function openChoice(state, events, playerId, effect) {
   if (effect.kind === 'scrapFromHandOrDiscard') {
     const player = state.players[playerId]
     const options = [
-      ...player.hand.map((card) => card.instanceId),
-      ...player.discard.map((card) => card.instanceId),
+      ...player.hand.map((card) => ({ id: card.instanceId, zone: 'hand' })),
+      ...player.discard.map((card) => ({ id: card.instanceId, zone: 'discard' })),
     ]
     if (options.length === 0) return false
     state.pendingChoice = {
@@ -159,7 +159,7 @@ function openChoice(state, events, playerId, effect) {
     return true
   }
   if (effect.kind === 'scrapFromTradeRow') {
-    const options = state.tradeRow.filter(Boolean).map((card) => card.instanceId)
+    const options = state.tradeRow.filter(Boolean).map((card) => ({ id: card.instanceId, zone: 'trade' }))
     if (options.length === 0) return false
     state.pendingChoice = {
       playerId,
@@ -374,7 +374,7 @@ function resolveChoice(state, events, command) {
   const choice = state.pendingChoice
   if (!choice) return 'Nothing to choose'
   if (command.playerId !== choice.playerId) return 'Not your choice'
-  if (!choice.options.includes(command.optionId)) return 'Not a legal card'
+  if (!choice.options.some((option) => option.id === command.optionId)) return 'Not a legal card'
   const resume = choice.resume
   state.pendingChoice = null
   if (choice.kind === 'discard') {
@@ -404,6 +404,20 @@ function resolveChoice(state, events, command) {
   return null
 }
 
+function playHand(state, events, command) {
+  const player = state.players[command.playerId]
+  if (player.hand.length === 0) return 'No cards in hand'
+  let guard = 0
+  while (player.hand.length > 0 && !state.pendingChoice && state.phase !== 'over') {
+    guard += 1
+    if (guard > 30) return 'Could not play the hand'
+    const card = player.hand[0]
+    const error = playCard(state, events, { playerId: command.playerId, instanceId: card.instanceId })
+    if (error) return error
+  }
+  return null
+}
+
 function endTurn(state, events, command) {
   const player = state.players[command.playerId]
   player.discard.push(...player.inPlay, ...player.hand)
@@ -425,7 +439,7 @@ function endTurn(state, events, command) {
   return null
 }
 
-export function setupGame(seed = 1, names = { p0: 'Player 1', p1: 'Player 2' }) {
+export function setupGame(seed = 1, names = { p0: 'Player 1', p1: 'Player 2' }, copies = null) {
   const state = {
     rng: seed >>> 0 || 1,
     nextId: 1,
@@ -462,7 +476,8 @@ export function setupGame(seed = 1, names = { p0: 'Player 1', p1: 'Player 2' }) 
   }
   for (const def of cards) {
     if (def.supply !== 'trade') continue
-    for (let i = 0; i < def.deckCopies; i += 1) state.tradeDeck.push(makeInstance(state, def.id))
+    const count = copies && Number.isInteger(copies[def.id]) ? copies[def.id] : def.deckCopies
+    for (let i = 0; i < count; i += 1) state.tradeDeck.push(makeInstance(state, def.id))
   }
   shuffleIn(state.tradeDeck, state)
   for (let i = 0; i < 5; i += 1) state.tradeRow.push(state.tradeDeck.pop() || null)
@@ -480,6 +495,7 @@ export function applyCommand(state, command) {
   let error = null
   if (next.pendingChoice && command.type !== 'CHOOSE') error = 'Choose first'
   else if (command.type === 'PLAY_CARD') error = playCard(next, events, command)
+  else if (command.type === 'PLAY_HAND') error = playHand(next, events, command)
   else if (command.type === 'SCRAP_CARD') error = scrapPlayed(next, events, command)
   else if (command.type === 'BUY_CARD') error = buyCard(next, events, command)
   else if (command.type === 'ATTACK_BASE') error = attackBase(next, events, command)
@@ -497,14 +513,17 @@ export function applyCommand(state, command) {
 export function legalCommands(state) {
   if (state.phase === 'over') return []
   if (state.pendingChoice) {
-    return state.pendingChoice.options.map((optionId) => ({
+    return state.pendingChoice.options.map((option) => ({
       type: 'CHOOSE',
       playerId: state.pendingChoice.playerId,
-      optionId,
+      optionId: option.id,
     }))
   }
   const player = state.players[state.activePlayerId]
   const commands = []
+  if (player.hand.length > 0) {
+    commands.push({ type: 'PLAY_HAND', playerId: player.id })
+  }
   for (const card of player.hand) {
     commands.push({ type: 'PLAY_CARD', playerId: player.id, instanceId: card.instanceId })
   }
