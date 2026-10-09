@@ -1,5 +1,9 @@
+import { useRef } from 'react'
 import { explorerCard, getCard } from '../cards.js'
 import Card from '../components/Card.jsx'
+import CardPicker from '../components/CardPicker.jsx'
+import { Stat } from '../components/SymbolIcon.jsx'
+import { useBoardDrag } from '../components/useBoardDrag.js'
 
 function other(id) {
   return id === 'p0' ? 'p1' : 'p0'
@@ -39,6 +43,8 @@ function locate(view, you, instanceId) {
 }
 
 export default function Board({ snap, banner, busy, pulse, onCommand, onLeave }) {
+  const boardRef = useRef(null)
+  const { drag, bind } = useBoardDrag(boardRef)
   const { view, you, mode } = snap
   const me = view.players[you]
   const opp = view.players[other(you)]
@@ -84,12 +90,17 @@ export default function Board({ snap, banner, busy, pulse, onCommand, onLeave })
     || banner
     || (mode === 'hotseat' ? `${me.name}, your turn` : 'Your turn')
 
+  const hand = Array.isArray(me.hand) ? me.hand : []
+
   return (
-    <div className="fit">
-      <div className="you-chip">{me.name} · {me.authority}</div>
+    <div className="fit" ref={boardRef}>
+      <div className="you-chip">
+        <div className="you-name">{me.name}</div>
+        <Stat kind="heal" amount={me.authority} />
+      </div>
       <div className="opp-bar" onClick={() => attack(null)}>
         <div className="opp-name">{opp.name}</div>
-        <div className="opp-auth">{opp.authority}</div>
+        <div className="opp-auth"><Stat kind="heal" amount={opp.authority} /></div>
         <div className="opp-meta">{Array.isArray(opp.hand) ? opp.hand.length : opp.hand.count} in hand</div>
       </div>
 
@@ -115,11 +126,11 @@ export default function Board({ snap, banner, busy, pulse, onCommand, onLeave })
         render={(card, index) => {
           if (index === 0) {
             return (
-              <Card
-                def={dayPass}
-                dimmed={!canAct || me.trade < dayPass.cost}
-                onClick={buyPass}
-              />
+            <Card
+              def={dayPass}
+              dimmed={!canAct || me.trade < dayPass.cost}
+              {...(canAct ? bind({ action: 'buy', def: dayPass, run: buyPass }) : {})}
+            />
             )
           }
           if (!card) return <div className="empty-card" />
@@ -129,14 +140,14 @@ export default function Board({ snap, banner, busy, pulse, onCommand, onLeave })
               def={def}
               dimmed={!canAct || me.trade < def.cost}
               selected={pulse === card.instanceId}
-              onClick={() => buyRow(index - 1)}
+              {...(canAct ? bind({ action: 'buy', def, run: () => buyRow(index - 1) }) : {})}
             />
           )
         }}
       />
 
-      <div className="pool pool-trade">{me.trade} trade</div>
-      <div className="pool pool-combat">{me.combat} combat</div>
+      <div className="pool pool-trade"><Stat kind="trade" amount={me.trade} /></div>
+      <div className="pool pool-combat"><Stat kind="combat" amount={me.combat} /></div>
       <div className="piles">Deck {me.deck.count} · Discard {me.discard.length}</div>
 
       <div className="zone-label zone-play">In play</div>
@@ -152,24 +163,36 @@ export default function Board({ snap, banner, busy, pulse, onCommand, onLeave })
               damage={card.damage}
               scrap={canScrap && canAct}
               selected={pulse === card.instanceId}
-              onClick={canScrap ? () => scrap(card) : undefined}
+              {...(canScrap && canAct ? bind({ action: 'scrap', def, run: () => scrap(card) }) : {})}
             />
           )
         }}
       />
 
       <div className="zone-label zone-hand">Hand</div>
+      <div
+        className={canAct && hand.length ? 'play-hand-btn' : 'play-hand-btn is-dim'}
+        onClick={() => {
+          if (!canAct || hand.length === 0) return
+          onCommand({ type: 'PLAY_HAND' })
+        }}
+      >
+        Play hand
+      </div>
       <Row
         className="row row-hand"
-        items={Array.isArray(me.hand) ? me.hand : []}
-        render={(card) => (
-          <Card
-            def={getCard(card.defId)}
-            dimmed={!canAct}
-            selected={pulse === card.instanceId}
-            onClick={() => play(card)}
-          />
-        )}
+        items={hand}
+        render={(card) => {
+          const def = getCard(card.defId)
+          return (
+            <Card
+              def={def}
+              dimmed={!canAct}
+              selected={pulse === card.instanceId}
+              {...(canAct ? bind({ action: 'play', def, run: () => play(card) }) : {})}
+            />
+          )
+        }}
       />
 
       <div className="banner">{prompt}</div>
@@ -184,37 +207,25 @@ export default function Board({ snap, banner, busy, pulse, onCommand, onLeave })
         End turn
       </div>
 
-      {choice ? (
-        <div className="choice-layer">
-          <div className="choice-title">{choice.prompt}</div>
-          <div className="choice-board">
-            <div className="choice-sheet" style={{ height: Math.ceil(choice.options.length / 3) * 156 + 12 }}>
-              {choice.options.map((instanceId, index) => {
-                const card = locate(view, you, instanceId)
-                if (!card) return null
-                const col = index % 3
-                const row = Math.floor(index / 3)
-                return (
-                  <div
-                    className="choice-slot"
-                    key={instanceId}
-                    style={{ left: 12 + col * 124, top: row * 156 }}
-                  >
-                    <Card
-                      def={getCard(card.defId)}
-                      damage={card.damage}
-                      selected
-                      onClick={() => {
-                        if (busy) return
-                        onCommand({ type: 'CHOOSE', optionId: instanceId })
-                      }}
-                    />
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+      {drag ? (
+        <div className={drag.over === drag.action ? 'drop-pad is-over' : 'drop-pad'} data-drop={drag.action}>
+          {drag.action === 'play' ? 'Play' : drag.action === 'buy' ? 'Buy' : 'Scrap'}
         </div>
+      ) : null}
+      {drag ? (
+        <div className="drag-ghost" style={{ left: drag.x - 45, top: drag.y - 56 }}>
+          <Card def={drag.def} />
+        </div>
+      ) : null}
+
+      {choice ? (
+        <CardPicker
+          prompt={choice.prompt}
+          options={choice.options}
+          busy={busy}
+          locate={(instanceId) => locate(view, you, instanceId)}
+          onChoose={(optionId) => onCommand({ type: 'CHOOSE', optionId })}
+        />
       ) : null}
 
       {view.phase === 'over' ? (

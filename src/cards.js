@@ -249,11 +249,19 @@ function effectText(effect) {
   return effect.kind
 }
 
+export function effectView(effect) {
+  if (effect.kind === 'gainTrade') return { trigger: effect.trigger, symbol: 'trade', amount: effect.amount }
+  if (effect.kind === 'gainCombat') return { trigger: effect.trigger, symbol: 'combat', amount: effect.amount }
+  if (effect.kind === 'gainAuthority') return { trigger: effect.trigger, symbol: 'heal', amount: effect.amount }
+  return { trigger: effect.trigger, text: effectText(effect) }
+}
+
 export function linesFor(def) {
   return def.effects.map((effect) => {
-    const text = effectText(effect)
-    if (effect.trigger === 'ally') return `Ally: ${text}`
-    if (effect.trigger === 'scrap') return `Scrap: ${text}`
+    const view = effectView(effect)
+    const text = view.symbol ? `${view.amount} ${view.symbol}` : view.text
+    if (view.trigger === 'ally') return `Ally: ${text}`
+    if (view.trigger === 'scrap') return `Scrap: ${text}`
     return text
   })
 }
