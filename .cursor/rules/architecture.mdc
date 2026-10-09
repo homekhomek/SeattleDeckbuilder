@@ -1,0 +1,14 @@
+---
+description: Follow the Seattle Deckbuilder architecture on every change
+alwaysApply: true
+---
+
+Before changing this project, read README.md at the repo root and follow it.
+
+- Game rules live in `src/game` and must stay headless. Do not import React, CSS, or PeerJS from the engine.
+- Change game state only by sending commands through the session. Do not mutate state from components.
+- Animate only from the visual event queue in `src/visual/queue.js`, using `await sleep(ms)`.
+- Every card definition lives in `src/cards.js`. Render cards only with `src/components/Card.jsx`.
+- Multiplayer goes through PeerJS in `src/net/session.js`. The host applies commands and sends each player a redacted view.
+- The game is phone-first. Lay screens out with absolute divs in `src/index.css` on the 390×740 board.
+- When the architecture changes, update README.md in the same change.

@@ -4,11 +4,24 @@ body,
   margin: 0;
   width: 100%;
   height: 100%;
-  background: #061018;
+  background: #07151d;
 }
 
 body {
   overflow: hidden;
+  touch-action: manipulation;
+}
+
+button,
+input,
+.gcard,
+.home-btn,
+.opp-bar,
+.end-btn,
+.leave-btn,
+.back-pin {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .stage {
@@ -19,340 +32,548 @@ body {
   height: 100%;
   overflow: hidden;
   background:
-    radial-gradient(900px 420px at 18% 0%, rgba(92, 140, 150, 0.28), transparent 70%),
+    radial-gradient(420px 220px at 18% 0%, rgba(92, 140, 150, 0.28), transparent 70%),
     linear-gradient(180deg, #102838 0%, #0c1e28 46%, #071810 100%);
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  color: #f6f1e6;
 }
 
-.board {
+.fit {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 1280px;
-  height: 800px;
-  transform: translate(-50%, -50%) scale(min(100vw / 1280px, 100vh / 800px));
-  background: #07151d;
+  width: 390px;
+  height: 740px;
+  transform: translate(-50%, -50%) scale(min(100vw / 390px, 100dvh / 740px));
+  background: rgba(7, 18, 24, 0.28);
 }
 
-.sky {
+.home-kicker {
   position: absolute;
-  left: 0;
-  top: 0;
-  width: 1280px;
-  height: 800px;
-  background:
-    radial-gradient(900px 420px at 18% 8%, rgba(92, 140, 150, 0.28), transparent 70%),
-    radial-gradient(700px 380px at 88% 18%, rgba(196, 154, 74, 0.12), transparent 68%),
-    linear-gradient(180deg, #102838 0%, #0c1e28 42%, #0a1a16 100%);
-}
-
-.ridge {
-  position: absolute;
-  width: 0;
-  height: 0;
-  z-index: 1;
-}
-
-.ridge-a {
-  left: -40px;
-  top: 470px;
-  border-left: 360px solid transparent;
-  border-right: 280px solid transparent;
-  border-bottom: 210px solid #0c221c;
-}
-
-.ridge-b {
-  left: 820px;
-  top: 500px;
-  border-left: 240px solid transparent;
-  border-right: 280px solid transparent;
-  border-bottom: 180px solid #10261f;
-}
-
-.rain {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 1280px;
-  height: 800px;
-  z-index: 2;
-  background-image: repeating-linear-gradient(
-    108deg,
-    transparent 0,
-    transparent 22px,
-    rgba(186, 214, 220, 0.07) 22px,
-    rgba(186, 214, 220, 0.07) 23px
-  );
-  pointer-events: none;
-}
-
-.bldg {
-  position: absolute;
-  z-index: 3;
-  background: #0d2832;
-}
-
-.b1 { left: 0; top: 560px; width: 86px; height: 180px; }
-.b2 { left: 86px; top: 500px; width: 48px; height: 240px; background: #12313c; }
-.b3 { left: 148px; top: 590px; width: 120px; height: 150px; }
-.b4 { left: 286px; top: 520px; width: 36px; height: 220px; background: #102c36; }
-.b5 { left: 340px; top: 575px; width: 92px; height: 165px; }
-.b6 { left: 1110px; top: 545px; width: 70px; height: 195px; background: #102c36; }
-.b7 { left: 1188px; top: 590px; width: 92px; height: 150px; }
-
-.light {
-  position: absolute;
-  z-index: 4;
-  width: 7px;
-  height: 9px;
-  background: #e7c27a;
-}
-
-.l1 { left: 22px; top: 590px; }
-.l2 { left: 102px; top: 540px; }
-.l3 { left: 188px; top: 630px; }
-.l4 { left: 360px; top: 610px; }
-.l5 { left: 1134px; top: 590px; }
-
-.needle-shaft {
-  position: absolute;
-  left: 1064px;
-  top: 430px;
-  width: 8px;
-  height: 280px;
-  z-index: 4;
-  background: #163844;
-}
-
-.needle-tip {
-  position: absolute;
-  left: 1064px;
-  top: 392px;
-  width: 8px;
-  height: 42px;
-  z-index: 4;
-  background: #1d5566;
-}
-
-.needle-saucer {
-  position: absolute;
-  left: 1024px;
-  top: 492px;
-  width: 88px;
-  height: 18px;
-  z-index: 4;
-  border-radius: 40px;
-  background: #1c6070;
-}
-
-.water {
-  position: absolute;
-  left: 0;
-  top: 690px;
-  width: 1280px;
-  height: 110px;
-  z-index: 5;
-  background: linear-gradient(180deg, #0a3038 0%, #071c22 100%);
-}
-
-.horizon {
-  position: absolute;
-  left: 0;
-  top: 690px;
-  width: 1280px;
-  height: 2px;
-  z-index: 5;
-  background: rgba(214, 178, 108, 0.55);
-}
-
-.copy-kicker {
-  position: absolute;
-  left: 72px;
-  top: 78px;
-  z-index: 6;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 14px;
+  left: 24px;
+  top: 36px;
+  font-size: 13px;
   font-weight: 640;
-  letter-spacing: 4px;
+  letter-spacing: 3px;
   text-transform: uppercase;
   color: #8fd0c6;
 }
 
-.copy-title {
+.home-title {
   position: absolute;
-  left: 68px;
-  top: 112px;
-  width: 560px;
-  z-index: 6;
+  left: 24px;
+  top: 64px;
+  width: 340px;
   margin: 0;
   font-family: Fraunces, "Iowan Old Style", Palatino, serif;
-  font-size: 78px;
+  font-size: 52px;
   font-weight: 560;
-  line-height: 0.9;
-  letter-spacing: -1.6px;
+  line-height: 0.92;
+  letter-spacing: -1px;
   color: #f6f1e6;
 }
 
-.copy-rule {
+.home-rule {
   position: absolute;
-  left: 72px;
-  top: 292px;
-  width: 148px;
+  left: 24px;
+  top: 188px;
+  width: 120px;
   height: 2px;
-  z-index: 6;
   background: #d6b26c;
 }
 
-.copy-tagline {
+.home-tag {
   position: absolute;
-  left: 72px;
-  top: 316px;
-  width: 500px;
-  z-index: 6;
+  left: 24px;
+  top: 206px;
+  width: 330px;
   margin: 0;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 380;
-  line-height: 1.4;
+  font-size: 18px;
+  line-height: 1.35;
   color: #d5e2df;
 }
 
-.soon {
+.home-btn,
+.end-btn,
+.leave-btn,
+.back-pin {
   position: absolute;
-  left: 72px;
-  top: 448px;
-  width: 520px;
-  height: 196px;
-  z-index: 6;
-  background: rgba(6, 16, 22, 0.72);
-  border: 1px solid rgba(246, 241, 230, 0.18);
-}
-
-.soon-heading {
-  position: absolute;
-  left: 28px;
-  top: 26px;
-  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
-  font-size: 32px;
-  font-weight: 560;
+  height: 58px;
+  border: 1px solid rgba(246, 241, 230, 0.22);
+  background: #12323c;
   color: #f6f1e6;
-}
-
-.soon-body {
-  position: absolute;
-  left: 28px;
-  top: 82px;
-  width: 450px;
-  margin: 0;
   font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 18px;
-  font-weight: 380;
-  line-height: 1.45;
-  color: #c5d4d0;
+  font-size: 20px;
+  font-weight: 640;
+  line-height: 58px;
+  text-align: center;
 }
 
-.card {
+.home-btn {
+  left: 24px;
+  width: 342px;
+}
+
+.btn-a { top: 300px; background: #1f6d62; }
+.btn-b { top: 370px; }
+.btn-c { top: 440px; }
+.btn-d { top: 510px; border-color: #d6b26c; color: #f3e2bc; }
+.is-dim { opacity: 0.45; }
+
+.join-title { font-size: 42px; }
+.lobby-title { font-size: 42px; }
+
+.code-input {
   position: absolute;
-  width: 228px;
-  height: 308px;
-  z-index: 7;
-  background: #f4efe4;
-  border-radius: 16px;
-  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.38);
+  left: 24px;
+  top: 210px;
+  width: 342px;
+  height: 58px;
+  box-sizing: border-box;
+  border: 1px solid rgba(246, 241, 230, 0.3);
+  background: rgba(6, 16, 22, 0.72);
+  color: #f6f1e6;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  padding: 0 14px;
 }
 
-.card-0 {
-  left: 690px;
-  top: 118px;
-  transform: rotate(-8deg);
-  border-top: 7px solid #c46a3a;
-}
-
-.card-1 {
-  left: 930px;
-  top: 148px;
-  transform: rotate(6deg);
-  border-top: 7px solid #1f7a86;
-}
-
-.card-2 {
-  left: 792px;
-  top: 430px;
-  transform: rotate(-2deg);
-  border-top: 7px solid #c6a15a;
-}
-
-.card-frame {
+.code-text {
   position: absolute;
-  left: 10px;
+  left: 24px;
+  top: 190px;
+  width: 342px;
+  height: 64px;
+  border: 1px solid #d6b26c;
+  background: rgba(6, 16, 22, 0.72);
+  color: #f6f1e6;
+  font-size: 28px;
+  font-weight: 640;
+  letter-spacing: 4px;
+  line-height: 64px;
+  text-align: center;
+  user-select: text;
+}
+
+.lobby-tag { top: 270px; }
+
+.back-pin {
+  left: 12px;
   top: 12px;
-  width: 208px;
-  height: 276px;
-  border: 1px solid rgba(36, 42, 38, 0.16);
+  width: 84px;
+  height: 40px;
+  line-height: 40px;
+  font-size: 16px;
+  z-index: 3;
+}
+
+.catalog-title {
+  position: absolute;
+  left: 108px;
+  top: 16px;
+  height: 40px;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 28px;
+  line-height: 40px;
+  z-index: 3;
+}
+
+.catalog-page {
+  position: absolute;
+  left: 0;
+  top: 64px;
+  width: 100%;
+  bottom: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.catalog-board {
+  position: relative;
+  width: 100%;
+}
+
+.catalog-slot {
+  position: absolute;
+  width: 44%;
+  height: 230px;
+}
+
+.you-chip {
+  position: absolute;
+  left: 16px;
+  top: 8px;
+  width: 220px;
+  height: 22px;
+  font-size: 14px;
+  font-weight: 640;
+  letter-spacing: 0.4px;
+  color: #d5e2df;
+}
+
+.opp-bar {
+  position: absolute;
+  left: 16px;
+  top: 34px;
+  width: 358px;
+  height: 52px;
+  background: rgba(6, 16, 22, 0.72);
+  border: 1px solid rgba(246, 241, 230, 0.16);
+}
+
+.opp-name {
+  position: absolute;
+  left: 12px;
+  top: 6px;
+  font-size: 16px;
+  font-weight: 640;
+}
+
+.opp-auth {
+  position: absolute;
+  right: 12px;
+  top: 4px;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 28px;
+  line-height: 1;
+}
+
+.opp-meta {
+  position: absolute;
+  left: 12px;
+  top: 28px;
+  font-size: 12px;
+  color: #8fd0c6;
+}
+
+.zone-label {
+  position: absolute;
+  left: 16px;
+  height: 16px;
+  font-size: 11px;
+  font-weight: 640;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #8fd0c6;
+}
+
+.zone-opp { top: 92px; }
+.zone-trade { top: 228px; }
+.zone-play { top: 400px; }
+.zone-hand { top: 536px; }
+
+.row {
+  position: absolute;
+  left: 0;
+  width: 390px;
+  height: 116px;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.row-opp { top: 108px; }
+.row-trade { top: 244px; }
+.row-play { top: 416px; }
+.row-hand { top: 552px; }
+
+.row-track {
+  position: relative;
+  height: 116px;
+}
+
+.row-slot {
+  position: absolute;
+  width: 90px;
+  height: 112px;
+}
+
+.empty-note {
+  position: absolute;
+  left: 16px;
+  font-size: 14px;
+  color: rgba(246, 241, 230, 0.55);
+}
+
+.note-opp { top: 148px; }
+
+.empty-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 90px;
+  height: 112px;
+  border: 1px dashed rgba(246, 241, 230, 0.2);
   border-radius: 10px;
 }
 
-.card-stamp {
+.pool {
   position: absolute;
-  left: 22px;
-  top: 26px;
-  width: 52px;
-  height: 52px;
-  border: 1.5px solid #9c3d32;
-  border-radius: 50%;
-  color: #9c3d32;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 11px;
+  top: 366px;
+  height: 28px;
+  font-size: 16px;
   font-weight: 640;
-  letter-spacing: 1px;
-  line-height: 52px;
-  text-align: center;
-  text-transform: uppercase;
+  line-height: 28px;
 }
 
-.card-suit {
+.pool-trade { left: 16px; width: 100px; color: #d6b26c; }
+.pool-combat { left: 122px; width: 120px; color: #f0a48a; }
+
+.piles {
   position: absolute;
-  left: 22px;
-  top: 96px;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 12px;
+  left: 240px;
+  top: 370px;
+  width: 136px;
+  height: 20px;
+  font-size: 11px;
+  line-height: 20px;
+  color: rgba(246, 241, 230, 0.7);
+}
+
+.banner {
+  position: absolute;
+  left: 16px;
+  top: 672px;
+  width: 358px;
+  height: 20px;
+  font-size: 13px;
+  line-height: 20px;
+  color: #f3e2bc;
+  overflow: hidden;
+}
+
+.leave-btn {
+  left: 16px;
+  top: 694px;
+  width: 96px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 15px;
+}
+
+.end-btn {
+  left: 122px;
+  top: 694px;
+  width: 252px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 16px;
+  background: #1f6d62;
+}
+
+.choice-layer {
+  position: absolute;
+  left: 0;
+  top: 220px;
+  width: 390px;
+  height: 520px;
+  z-index: 6;
+  background: rgba(6, 16, 24, 0.96);
+}
+
+.choice-title {
+  position: absolute;
+  left: 16px;
+  top: 10px;
+  width: 358px;
+  height: 28px;
+  font-size: 16px;
   font-weight: 640;
-  letter-spacing: 2px;
+  line-height: 28px;
+}
+
+.choice-board {
+  position: absolute;
+  left: 0;
+  top: 44px;
+  width: 390px;
+  height: 476px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.choice-sheet {
+  position: relative;
+  width: 390px;
+}
+
+.choice-slot {
+  position: absolute;
+  width: 112px;
+  height: 148px;
+}
+
+.win-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 740px;
+  z-index: 8;
+  background: rgba(6, 16, 24, 0.88);
+}
+
+.win-title {
+  position: absolute;
+  left: 24px;
+  top: 240px;
+  width: 342px;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 48px;
+  line-height: 1;
+  text-align: center;
+}
+
+.btn-win {
+  top: 360px;
+}
+
+.gcard {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background: #f4efe4;
+  color: #1c2824;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.28);
+}
+
+.gcard.is-selected {
+  outline: 2px solid #f6f1e6;
+  outline-offset: 1px;
+}
+
+.faction-harbor { box-shadow: inset 0 5px 0 #1f7a86, 0 8px 16px rgba(0, 0, 0, 0.28); }
+.faction-market { box-shadow: inset 0 5px 0 #2f7d45, 0 8px 16px rgba(0, 0, 0, 0.28); }
+.faction-monorail { box-shadow: inset 0 5px 0 #b6892e, 0 8px 16px rgba(0, 0, 0, 0.28); }
+.faction-foundry { box-shadow: inset 0 5px 0 #9c3d32, 0 8px 16px rgba(0, 0, 0, 0.28); }
+.faction-neutral { box-shadow: inset 0 5px 0 #607078, 0 8px 16px rgba(0, 0, 0, 0.28); }
+.is-outpost { border: 1px solid #9c3d32; }
+
+.gcard-cost,
+.gcard-def {
+  position: absolute;
+  top: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background: #1c2824;
+  color: #f6f1e6;
+  font-size: 11px;
+  font-weight: 640;
+  line-height: 18px;
+  text-align: center;
+}
+
+.gcard-cost { left: 6px; }
+.gcard-def { right: 6px; background: #9c3d32; }
+
+.gcard-faction {
+  position: absolute;
+  left: 6px;
+  top: 28px;
+  width: calc(100% - 12px);
+  height: 12px;
+  font-size: 9px;
+  font-weight: 640;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   color: #6d5a42;
 }
 
-.card-name {
+.gcard-name {
   position: absolute;
-  left: 22px;
-  top: 128px;
-  width: 184px;
+  left: 6px;
+  top: 40px;
+  width: calc(100% - 12px);
+  height: 16px;
   font-family: Fraunces, "Iowan Old Style", Palatino, serif;
-  font-size: 30px;
-  font-weight: 560;
-  line-height: 1;
-  color: #1c2824;
+  font-size: 12px;
+  line-height: 14px;
+  overflow: hidden;
 }
 
-.card-text {
+.gcard-type {
   position: absolute;
-  left: 22px;
-  top: 214px;
-  width: 184px;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
-  font-size: 15px;
-  font-weight: 380;
-  line-height: 1.35;
-  color: #3d4a44;
+  left: 6px;
+  top: 56px;
+  width: calc(100% - 12px);
+  height: 12px;
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #607068;
 }
 
-.footer {
+.gcard-rules {
   position: absolute;
-  left: 72px;
-  top: 668px;
-  z-index: 6;
-  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  left: 6px;
+  top: 70px;
+  width: calc(100% - 12px);
+  height: 40px;
+  font-size: 9px;
+  line-height: 11px;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+.gcard-scrap {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  height: 12px;
+  font-size: 8px;
+  font-weight: 640;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #9c3d32;
+}
+
+.gcard.is-large .gcard-cost,
+.gcard.is-large .gcard-def {
+  top: 12px;
+  width: 26px;
+  height: 26px;
+  border-radius: 13px;
   font-size: 14px;
-  font-weight: 520;
-  letter-spacing: 0.4px;
-  color: rgba(246, 241, 230, 0.72);
+  line-height: 26px;
+}
+
+.gcard.is-large .gcard-cost { left: 10px; }
+.gcard.is-large .gcard-def { right: 10px; }
+
+.gcard.is-large .gcard-faction {
+  left: 12px;
+  top: 48px;
+  width: 140px;
+  height: 16px;
+  font-size: 12px;
+}
+
+.gcard.is-large .gcard-name {
+  left: 12px;
+  top: 68px;
+  width: 150px;
+  height: 52px;
+  font-size: 22px;
+  line-height: 24px;
+}
+
+.gcard.is-large .gcard-type {
+  left: 12px;
+  top: 124px;
+  width: 150px;
+  font-size: 12px;
+}
+
+.gcard.is-large .gcard-rules {
+  left: 12px;
+  top: 146px;
+  width: 150px;
+  height: 72px;
+  font-size: 13px;
+  line-height: 16px;
 }

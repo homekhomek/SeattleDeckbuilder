@@ -1,8 +1,8 @@
 # Seattle Deckbuilder
 
-A Seattle-themed deckbuilder, still on the way. The site is a small React app with a placeholder page until the game itself exists.
+A two-player deckbuilder for phone browsers. The structure follows Star Realms: authority instead of life, trade to buy, combat to fight, a five-card trade row, bases, outposts, factions, ally abilities, and scrap. The cards themselves are original and live in one file.
 
-Live site, once Pages is enabled: [https://homekhomek.github.io/SeattleDeckbuilder/](https://homekhomek.github.io/SeattleDeckbuilder/)
+Play it on a phone at [https://homekhomek.github.io/SeattleDeckbuilder/](https://homekhomek.github.io/SeattleDeckbuilder/) after Pages is enabled. Two phones can host and join. One phone can pass back and forth.
 
 ## Run locally
 
@@ -13,27 +13,70 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5173/SeattleDeckbuilder/](http://localhost:5173/SeattleDeckbuilder/).
-
-Production build, the same output GitHub Pages serves:
+Open [http://localhost:5173/SeattleDeckbuilder/](http://localhost:5173/SeattleDeckbuilder/) and use a narrow viewport. The board is 390×740 and scales to the screen.
 
 ```bash
+npm run sim
 npm run build
 npm run preview
 ```
 
-The preview is served at [http://localhost:4173/SeattleDeckbuilder/](http://localhost:4173/SeattleDeckbuilder/). `vite.config.js` sets `base` to `/SeattleDeckbuilder/` so asset paths work on the project site, in dev, and in preview.
+`npm run sim` plays a full game in Node with no browser. The preview is at [http://localhost:4173/SeattleDeckbuilder/](http://localhost:4173/SeattleDeckbuilder/). `vite.config.js` sets `base` to `/SeattleDeckbuilder/`.
 
-## Edit the page
+## Architecture
 
-Copy lives in `src/site.js` (title, tagline, coming soon text, and the three cards). Layout and colors live in `src/index.css`, on a 1280×800 board that scales to the window. `src/App.jsx` places those pieces.
+Keep this split. Future changes should follow it.
+
+- `src/cards.js` is the only card catalog. Adding a card means adding a data object there, not a new component and not a new rule function.
+- `src/game/engine.js` is the only place that changes a match. `applyCommand(state, command)` returns `{ state, events, error }`. It does not import React, CSS, or PeerJS. Illegal commands return the previous state.
+- React never imports the engine. Screens send command objects through `src/net/session.js`. The session is the only door into the rules.
+- The engine emits visual events. `src/visual/queue.js` plays that list in order with `await sleep(ms)`. Components render the latest state snapshot and use the queue for the banner and highlights. Do not encode rules in click handlers, and do not start timers inside the engine.
+- Layout is absolute divs in `src/index.css` on a 390×740 board. The board scales to the phone. Controls are tap targets, not hover.
+- Every card on screen is `src/components/Card.jsx`. The catalog, trade row, hand, bases, and choice tray all use it.
+
+```mermaid
+flowchart LR
+  phone[Phone UI]
+  queue[Visual queue]
+  session[PeerJS session]
+  engine[Headless engine]
+  phone -->|commands| session
+  session -->|legal commands| engine
+  engine -->|snapshot plus events| session
+  session -->|events| queue
+  queue -->|await sleep| phone
+```
+
+### Commands
+
+`PLAY_CARD`, `SCRAP_CARD`, `BUY_CARD`, `ATTACK_PLAYER`, `ATTACK_BASE`, `CHOOSE`, `END_TURN`.
+
+Only the player who must act may send one. A pending choice blocks every command except `CHOOSE`. Outposts must be destroyed before the player or their other bases can be hit. Unspent trade and combat die at end of turn. Ships in play and cards left in hand are discarded, then that player draws five. Bases stay. Ally abilities arm again at the start of that player’s next turn. A player at 0 authority loses.
+
+Effects on a card are data: `gainTrade`, `gainCombat`, `gainAuthority`, `draw`, `opponentDiscard`, `scrapFromHandOrDiscard`, `scrapFromTradeRow`. Triggers are `play`, `ally`, and `scrap`. A choice pauses the rest of the effect list on `pendingChoice.resume` until `CHOOSE` resolves.
+
+### Hidden information
+
+The host holds the full state, including deck order. `viewFor` is what a phone receives. Decks are counts. The opponent’s hand is a count. Discard piles, the trade row, bases, and played ships are visible. `pendingChoice.resume` is never sent. Draw events for the other player do not include the card id.
+
+Pass-and-play uses the same engine on one phone and shows whoever must act, so the hand flips when the phone should be passed.
+
+### PeerJS
+
+`createHost` opens a short code. `createGuest(code)` connects. Guests send `{ t: 'command', command }`. The host applies it and sends `{ t: 'sync', view, events }` back, with a different view and event list for each seat. The public PeerJS broker has to be reachable. GitHub Pages is HTTPS, which phones need for WebRTC.
+
+### Screens
+
+Home has Host, Join, Pass and play, and View all cards. View all cards lists `src/cards.js` through the shared card component.
+
+### Adding a card
+
+Add one object to the `cards` array. Set `supply` to `trade`, `starter`, or `explorer`. Trade cards need `deckCopies`. Starters need `opening`. Use the effect vocabulary above. If a new effect kind is required, teach `applyEffectList` in the engine and `linesFor` in `src/cards.js`, then update this section.
 
 ## Deploy
 
-Pushes to `main` run [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The workflow installs dependencies, runs `npm run build`, uploads `dist/` with the official Pages actions, and deploys it.
-
-The workflow can also be started by hand from the Actions tab.
+Pushes to `main` run [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The workflow installs dependencies, runs `npm run build`, uploads `dist/`, and deploys with the official Pages actions.
 
 ### One-time setup
 
-In the repository on GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions** if it is not already. After that, a push to `main` publishes the site. The first successful deploy may take a minute before the URL responds.
+In the repository on GitHub, open **Settings > Pages** and set **Source** to **GitHub Actions** if it is not already.
