@@ -1,4 +1,5 @@
 import Peer from 'peerjs'
+import { loadCopies } from '../deckSetup.js'
 import { applyCommand, filterEvents, setupGame, viewFor } from '../game/engine.js'
 
 function emitter() {
@@ -48,7 +49,7 @@ function tableCode() {
 }
 
 export function createHotseat() {
-  let state = setupGame(Date.now() >>> 0)
+  let state = setupGame(Date.now() >>> 0, { p0: 'Player 1', p1: 'Player 2' }, loadCopies())
   let closed = false
   const bus = emitter()
   function publish(events, error) {
@@ -134,7 +135,7 @@ export function createHost() {
     }
     conn = incoming
     conn.on('open', () => {
-      state = setupGame((Date.now() >>> 0) || 1, { p0: 'Host', p1: 'Guest' })
+      state = setupGame((Date.now() >>> 0) || 1, { p0: 'Host', p1: 'Guest' }, loadCopies())
       broadcast([])
     })
     conn.on('data', (message) => {

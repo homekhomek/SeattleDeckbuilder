@@ -49,7 +49,15 @@ flowchart LR
 
 ### Commands
 
-`PLAY_CARD`, `SCRAP_CARD`, `BUY_CARD`, `ATTACK_PLAYER`, `ATTACK_BASE`, `CHOOSE`, `END_TURN`.
+`PLAY_CARD`, `PLAY_HAND`, `SCRAP_CARD`, `BUY_CARD`, `ATTACK_PLAYER`, `ATTACK_BASE`, `CHOOSE`, `END_TURN`.
+
+`PLAY_HAND` plays the hand from the left until it is empty, a choice opens, or the game ends. Cards are also draggable: drag up from a card and drop it on the pad. A sideways swipe still scrolls the row. Tap still works.
+
+Choices from hand, discard, or the trade row all use `src/components/CardPicker.jsx`. Each option is `{ id, zone }`, and the picker always groups them in the same order: Hand, Discard, Trade row, In play, Bases.
+
+Trade, combat, and authority use symbols from [game-icons.net](https://game-icons.net) (CC BY 3.0): coins, crossed swords, and healing. Factions use anchor, shop, subway, and anvil. Credit Lorc and Delapouite on the home screen.
+
+View all cards has − and + controls for how many copies of each trade card go in the deck (0 to 8). Those counts are saved on the phone. The host’s counts, or the pass-and-play phone’s counts, are what `setupGame` uses.
 
 Only the player who must act may send one. A pending choice blocks every command except `CHOOSE`. Outposts must be destroyed before the player or their other bases can be hit. Unspent trade and combat die at end of turn. Ships in play and cards left in hand are discarded, then that player draws five. Bases stay. Ally abilities arm again at the start of that player’s next turn. A player at 0 authority loses.
 
@@ -71,7 +79,7 @@ Home has Host, Join, Pass and play, and View all cards. View all cards lists `sr
 
 ### Adding a card
 
-Add one object to the `cards` array. Set `supply` to `trade`, `starter`, or `explorer`. Trade cards need `deckCopies`. Starters need `opening`. Use the effect vocabulary above. If a new effect kind is required, teach `applyEffectList` in the engine and `linesFor` in `src/cards.js`, then update this section.
+Add one object to the `cards` array. Set `supply` to `trade`, `starter`, or `explorer`. Trade cards need `deckCopies`, which is the default the copy controls start from. Starters need `opening`. Use the effect vocabulary above. If a new effect kind is required, teach `applyEffectList` in the engine and `linesFor` in `src/cards.js`, then update this section.
 
 ## Deploy
 
