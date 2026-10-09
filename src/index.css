@@ -1,0 +1,358 @@
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #061018;
+}
+
+body {
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(900px 420px at 18% 0%, rgba(92, 140, 150, 0.28), transparent 70%),
+    linear-gradient(180deg, #102838 0%, #0c1e28 46%, #071810 100%);
+}
+
+.board {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1280px;
+  height: 800px;
+  transform: translate(-50%, -50%) scale(min(100vw / 1280px, 100vh / 800px));
+  background: #07151d;
+}
+
+.sky {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 800px;
+  background:
+    radial-gradient(900px 420px at 18% 8%, rgba(92, 140, 150, 0.28), transparent 70%),
+    radial-gradient(700px 380px at 88% 18%, rgba(196, 154, 74, 0.12), transparent 68%),
+    linear-gradient(180deg, #102838 0%, #0c1e28 42%, #0a1a16 100%);
+}
+
+.ridge {
+  position: absolute;
+  width: 0;
+  height: 0;
+  z-index: 1;
+}
+
+.ridge-a {
+  left: -40px;
+  top: 470px;
+  border-left: 360px solid transparent;
+  border-right: 280px solid transparent;
+  border-bottom: 210px solid #0c221c;
+}
+
+.ridge-b {
+  left: 820px;
+  top: 500px;
+  border-left: 240px solid transparent;
+  border-right: 280px solid transparent;
+  border-bottom: 180px solid #10261f;
+}
+
+.rain {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 800px;
+  z-index: 2;
+  background-image: repeating-linear-gradient(
+    108deg,
+    transparent 0,
+    transparent 22px,
+    rgba(186, 214, 220, 0.07) 22px,
+    rgba(186, 214, 220, 0.07) 23px
+  );
+  pointer-events: none;
+}
+
+.bldg {
+  position: absolute;
+  z-index: 3;
+  background: #0d2832;
+}
+
+.b1 { left: 0; top: 560px; width: 86px; height: 180px; }
+.b2 { left: 86px; top: 500px; width: 48px; height: 240px; background: #12313c; }
+.b3 { left: 148px; top: 590px; width: 120px; height: 150px; }
+.b4 { left: 286px; top: 520px; width: 36px; height: 220px; background: #102c36; }
+.b5 { left: 340px; top: 575px; width: 92px; height: 165px; }
+.b6 { left: 1110px; top: 545px; width: 70px; height: 195px; background: #102c36; }
+.b7 { left: 1188px; top: 590px; width: 92px; height: 150px; }
+
+.light {
+  position: absolute;
+  z-index: 4;
+  width: 7px;
+  height: 9px;
+  background: #e7c27a;
+}
+
+.l1 { left: 22px; top: 590px; }
+.l2 { left: 102px; top: 540px; }
+.l3 { left: 188px; top: 630px; }
+.l4 { left: 360px; top: 610px; }
+.l5 { left: 1134px; top: 590px; }
+
+.needle-shaft {
+  position: absolute;
+  left: 1064px;
+  top: 430px;
+  width: 8px;
+  height: 280px;
+  z-index: 4;
+  background: #163844;
+}
+
+.needle-tip {
+  position: absolute;
+  left: 1064px;
+  top: 392px;
+  width: 8px;
+  height: 42px;
+  z-index: 4;
+  background: #1d5566;
+}
+
+.needle-saucer {
+  position: absolute;
+  left: 1024px;
+  top: 492px;
+  width: 88px;
+  height: 18px;
+  z-index: 4;
+  border-radius: 40px;
+  background: #1c6070;
+}
+
+.water {
+  position: absolute;
+  left: 0;
+  top: 690px;
+  width: 1280px;
+  height: 110px;
+  z-index: 5;
+  background: linear-gradient(180deg, #0a3038 0%, #071c22 100%);
+}
+
+.horizon {
+  position: absolute;
+  left: 0;
+  top: 690px;
+  width: 1280px;
+  height: 2px;
+  z-index: 5;
+  background: rgba(214, 178, 108, 0.55);
+}
+
+.copy-kicker {
+  position: absolute;
+  left: 72px;
+  top: 78px;
+  z-index: 6;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 640;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #8fd0c6;
+}
+
+.copy-title {
+  position: absolute;
+  left: 68px;
+  top: 112px;
+  width: 560px;
+  z-index: 6;
+  margin: 0;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 78px;
+  font-weight: 560;
+  line-height: 0.9;
+  letter-spacing: -1.6px;
+  color: #f6f1e6;
+}
+
+.copy-rule {
+  position: absolute;
+  left: 72px;
+  top: 292px;
+  width: 148px;
+  height: 2px;
+  z-index: 6;
+  background: #d6b26c;
+}
+
+.copy-tagline {
+  position: absolute;
+  left: 72px;
+  top: 316px;
+  width: 500px;
+  z-index: 6;
+  margin: 0;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 380;
+  line-height: 1.4;
+  color: #d5e2df;
+}
+
+.soon {
+  position: absolute;
+  left: 72px;
+  top: 448px;
+  width: 520px;
+  height: 196px;
+  z-index: 6;
+  background: rgba(6, 16, 22, 0.72);
+  border: 1px solid rgba(246, 241, 230, 0.18);
+}
+
+.soon-heading {
+  position: absolute;
+  left: 28px;
+  top: 26px;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 32px;
+  font-weight: 560;
+  color: #f6f1e6;
+}
+
+.soon-body {
+  position: absolute;
+  left: 28px;
+  top: 82px;
+  width: 450px;
+  margin: 0;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 380;
+  line-height: 1.45;
+  color: #c5d4d0;
+}
+
+.card {
+  position: absolute;
+  width: 228px;
+  height: 308px;
+  z-index: 7;
+  background: #f4efe4;
+  border-radius: 16px;
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.38);
+}
+
+.card-0 {
+  left: 690px;
+  top: 118px;
+  transform: rotate(-8deg);
+  border-top: 7px solid #c46a3a;
+}
+
+.card-1 {
+  left: 930px;
+  top: 148px;
+  transform: rotate(6deg);
+  border-top: 7px solid #1f7a86;
+}
+
+.card-2 {
+  left: 792px;
+  top: 430px;
+  transform: rotate(-2deg);
+  border-top: 7px solid #c6a15a;
+}
+
+.card-frame {
+  position: absolute;
+  left: 10px;
+  top: 12px;
+  width: 208px;
+  height: 276px;
+  border: 1px solid rgba(36, 42, 38, 0.16);
+  border-radius: 10px;
+}
+
+.card-stamp {
+  position: absolute;
+  left: 22px;
+  top: 26px;
+  width: 52px;
+  height: 52px;
+  border: 1.5px solid #9c3d32;
+  border-radius: 50%;
+  color: #9c3d32;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 640;
+  letter-spacing: 1px;
+  line-height: 52px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.card-suit {
+  position: absolute;
+  left: 22px;
+  top: 96px;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 640;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #6d5a42;
+}
+
+.card-name {
+  position: absolute;
+  left: 22px;
+  top: 128px;
+  width: 184px;
+  font-family: Fraunces, "Iowan Old Style", Palatino, serif;
+  font-size: 30px;
+  font-weight: 560;
+  line-height: 1;
+  color: #1c2824;
+}
+
+.card-text {
+  position: absolute;
+  left: 22px;
+  top: 214px;
+  width: 184px;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 15px;
+  font-weight: 380;
+  line-height: 1.35;
+  color: #3d4a44;
+}
+
+.footer {
+  position: absolute;
+  left: 72px;
+  top: 668px;
+  z-index: 6;
+  font-family: Outfit, "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 520;
+  letter-spacing: 0.4px;
+  color: rgba(246, 241, 230, 0.72);
+}
