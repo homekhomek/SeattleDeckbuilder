@@ -39,10 +39,17 @@ function scripted() {
   result = applyCommand(state, { type: 'ATTACK_BASE', playerId: 'p0', instanceId: 'forge1' })
   assert(!result.error, result.error)
   assert(result.state.players.p1.bases.length === 0, 'outpost destroyed')
-  assert(result.state.players.p0.combat === 4, 'leftover combat')
-  result = applyCommand(result.state, { type: 'ATTACK_PLAYER', playerId: 'p0' })
-  assert(!result.error, result.error)
+  assert(result.state.players.p0.combat === 0, 'leftover combat hit the player')
   assert(result.state.players.p1.authority === 46, 'player damage')
+
+  state = setupGame(5)
+  state.players.p0.hand = [instance('alley-viper', 'v1')]
+  state.players.p0.inPlay = []
+  state.players.p1.authority = 50
+  result = applyCommand(state, { type: 'PLAY_CARD', playerId: 'p0', instanceId: 'v1' })
+  assert(!result.error, result.error)
+  assert(result.state.players.p0.combat === 0, 'combat spent with no bases')
+  assert(result.state.players.p1.authority === 49, 'auto attack the player')
 
   state = setupGame(2)
   const before = state.players.p1.hand.length
@@ -72,7 +79,8 @@ function scripted() {
   assert(!result.error, result.error)
   assert(result.state.players.p0.inPlay.length === 0, 'scrapped out of play')
   assert(result.state.scrap.length === 1, 'scrap pile')
-  assert(result.state.players.p0.combat >= 2, 'scrap combat')
+  assert(result.state.players.p0.combat === 0, 'scrap combat hit the player')
+  assert(result.state.players.p1.authority === 48, 'scrap combat')
 
   state = setupGame(6)
   const dealt = state.players.p0.hand.length

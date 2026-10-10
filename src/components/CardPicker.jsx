@@ -27,14 +27,14 @@ export default function CardPicker({ prompt, options, locate, busy, onChoose }) 
     <div className="choice-layer">
       <div className="choice-title">{prompt}</div>
       <div className="choice-board">
-        <div className="choice-sheet" style={{ height: groups.length * 150 }}>
+        <div className="choice-sheet" style={{ height: groups.length * 136 }}>
           {groups.map((group, groupIndex) => (
-            <div className="choice-group" key={group.zone} style={{ top: groupIndex * 150 }}>
+            <div className="choice-group" key={group.zone} style={{ top: groupIndex * 136 }}>
               <div className="choice-zone">{group.label}</div>
               <div className="choice-scroller">
-                <div className="row-track" style={{ width: Math.max(96, group.items.length * 100) }}>
+                <div className="row-track" style={{ width: Math.max(86, group.items.length * 86) }}>
                   {group.items.map((item, index) => (
-                    <div className="choice-slot" key={item.id} style={{ left: index * 100, top: 0 }}>
+                    <div className="choice-slot" key={item.id} style={{ left: index * 86, top: 0 }}>
                       <Card
                         def={getCard(item.card.defId)}
                         damage={item.card.damage}

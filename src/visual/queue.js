@@ -34,20 +34,34 @@ export function eventLine(event) {
 }
 
 const waits = {
-  cardPlayed: 160,
-  cardBought: 160,
-  cardDrawn: 90,
-  cardScrapped: 160,
-  cardDiscarded: 140,
-  baseDamaged: 160,
+  cardPlayed: 260,
+  cardBought: 420,
+  cardDrawn: 500,
+  cardScrapped: 220,
+  cardDiscarded: 400,
+  tradeFilled: 500,
+  baseDamaged: 260,
   gameOver: 0,
   choiceRequired: 0,
 }
 
 export async function playQueue(events, onEvent) {
-  for (const event of events) {
+  let index = 0
+  while (index < events.length) {
+    const event = events[index]
+    if (event.type === 'cardDiscarded') {
+      const cards = []
+      while (index < events.length && events[index].type === 'cardDiscarded') {
+        cards.push(events[index])
+        index += 1
+      }
+      onEvent({ type: 'cardDiscarded', cards }, cards.length > 1 ? 'Discarded' : `Discarded ${name(cards[0].defId)}`)
+      await sleep(waits.cardDiscarded)
+      continue
+    }
     const line = eventLine(event)
     if (line) onEvent(event, line)
     await sleep(waits[event.type] ?? 80)
+    index += 1
   }
 }

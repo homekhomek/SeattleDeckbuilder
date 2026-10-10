@@ -1,8 +1,13 @@
-import { useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
+
+const ghostW = 78
+const ghostH = 106
 
 export function useBoardDrag(boardRef) {
   const start = useRef(null)
   const suppress = useRef(false)
+  const ghostRef = useRef(null)
+  const pointRef = useRef(null)
   const [drag, setDrag] = useState(null)
 
   function point(clientX, clientY) {
@@ -19,6 +24,18 @@ export function useBoardDrag(boardRef) {
     const el = document.elementFromPoint(clientX, clientY)
     return el?.closest?.('[data-drop]')?.dataset.drop || null
   }
+
+  function place() {
+    const ghost = ghostRef.current
+    const at = pointRef.current
+    if (!ghost || !at) return
+    ghost.style.left = `${at.x - ghostW / 2}px`
+    ghost.style.top = `${at.y - ghostH / 2}px`
+  }
+
+  useLayoutEffect(() => {
+    place()
+  })
 
   function bind(payload) {
     if (!payload) return {}
@@ -46,18 +63,28 @@ export function useBoardDrag(boardRef) {
           }
           origin.armed = true
           event.currentTarget.setPointerCapture?.(event.pointerId)
+          pointRef.current = point(event.clientX, event.clientY)
+          setDrag({
+            action: origin.payload.action,
+            def: origin.payload.def,
+            key: origin.payload.key,
+            over: hit(event.clientX, event.clientY),
+          })
+          return
         }
         if (origin.scroll) return
-        setDrag({
-          action: origin.payload.action,
-          def: origin.payload.def,
-          ...point(event.clientX, event.clientY),
-          over: hit(event.clientX, event.clientY),
+        pointRef.current = point(event.clientX, event.clientY)
+        place()
+        const over = hit(event.clientX, event.clientY)
+        setDrag((current) => {
+          if (!current || current.over === over) return current
+          return { ...current, over }
         })
       },
       onPointerUp(event) {
         const origin = start.current
         start.current = null
+        pointRef.current = null
         if (!origin) return
         if (origin.scroll) {
           suppress.current = true
@@ -74,6 +101,7 @@ export function useBoardDrag(boardRef) {
       },
       onPointerCancel() {
         start.current = null
+        pointRef.current = null
         setDrag(null)
       },
       onClick() {
@@ -81,10 +109,11 @@ export function useBoardDrag(boardRef) {
           suppress.current = false
           return
         }
+        if (payload.dragOnly) return
         payload.run()
       },
     }
   }
 
-  return { drag, bind }
+  return { drag, ghostRef, bind }
 }

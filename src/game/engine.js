@@ -106,6 +106,7 @@ function applyInstant(state, events, playerId, effect) {
   } else if (effect.kind === 'gainCombat') {
     player.combat += effect.amount
     emit(events, publicEvent({ type: 'gained', playerId, combat: effect.amount }))
+    dumpCombat(state, events, playerId)
   } else if (effect.kind === 'gainAuthority') {
     player.authority += effect.amount
     emit(events, publicEvent({
@@ -346,8 +347,24 @@ function attackBase(state, events, command) {
     takeFrom(opponent.bases, card.instanceId)
     card.damage = 0
     opponent.discard.push(card)
+    emit(events, publicEvent({
+      type: 'cardDiscarded',
+      playerId: other(command.playerId),
+      instanceId: card.instanceId,
+      defId: card.defId,
+    }))
   }
+  dumpCombat(state, events, command.playerId)
   return null
+}
+
+function dumpCombat(state, events, playerId) {
+  const player = state.players[playerId]
+  if (state.phase === 'over' || player.combat <= 0) return
+  const opponent = state.players[other(playerId)]
+  const living = opponent.bases.filter((base) => remaining(base) > 0)
+  if (living.length > 0) return
+  attackPlayer(state, events, { playerId })
 }
 
 function attackPlayer(state, events, command) {
@@ -420,6 +437,14 @@ function playHand(state, events, command) {
 
 function endTurn(state, events, command) {
   const player = state.players[command.playerId]
+  for (const card of [...player.inPlay, ...player.hand]) {
+    emit(events, publicEvent({
+      type: 'cardDiscarded',
+      playerId: command.playerId,
+      instanceId: card.instanceId,
+      defId: card.defId,
+    }))
+  }
   player.discard.push(...player.inPlay, ...player.hand)
   player.inPlay = []
   player.hand = []

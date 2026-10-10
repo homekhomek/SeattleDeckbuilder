@@ -8,6 +8,7 @@ export default function Match({ spec, onLeave }) {
   const [banner, setBanner] = useState('')
   const [busy, setBusy] = useState(false)
   const [pulse, setPulse] = useState(null)
+  const [motion, setMotion] = useState(null)
   const [copied, setCopied] = useState(false)
   const chain = useRef(Promise.resolve())
   const sessionRef = useRef(null)
@@ -32,9 +33,11 @@ export default function Match({ spec, onLeave }) {
         await playQueue(next.events, (event, line) => {
           setBanner(line)
           setPulse(event.instanceId || null)
+          setMotion(event)
         })
         setBusy(false)
         setPulse(null)
+        setMotion(null)
       })
     })
     return () => {
@@ -85,6 +88,7 @@ export default function Match({ spec, onLeave }) {
         banner={banner}
         busy={busy}
         pulse={pulse}
+        motion={motion}
         onLeave={onLeave}
         onCommand={(command) => sessionRef.current?.send(command)}
       />

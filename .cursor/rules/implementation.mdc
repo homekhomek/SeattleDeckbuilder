@@ -1,0 +1,6 @@
+---
+description: Skip simulation and screenshots while implementing
+alwaysApply: true
+---
+
+Do not run `npm run sim`. Do not take screenshots or drive a browser to check layout. Implement the change and stop.
